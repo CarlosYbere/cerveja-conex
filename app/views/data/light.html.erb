@@ -1,0 +1,47 @@
+<h1>Iluminação </h1>
+<p> A lâmpada está <%= @lightstatus%>.</p>
+
+A lâmpada está <%= if @lightonoff  then "ligado" else "desligado" end%>.
+
+<%if @lightonoff %>
+<p> IMAGEM LIGADA</p>
+<% else %>
+<img src="desligada.jpg">
+<% end %>
+
+<hr>
+
+<script type="text/javascript">
+function onoff(){
+  $.ajax({url: "/luzes"}).done(function(data){console.debug(data)})
+  currentvalue = document.getElementById('onoff1').value;
+  document.getElementById('img').setAttribute("width",200);
+  if(currentvalue=="On"){
+    $('#onoff1').val("Off");
+    document.getElementById('img').src ="ligada.png";
+    document.getElementById('onoffmsg').innerHTML = "lampada agora esta ligada";
+    }
+  else {
+    document.getElementById('onoff1').value ="On";
+    document.getElementById('img').src ="desligada.jpg";
+    document.getElementById('onoffmsg').innerHTML = "lampada agora esta desligada";
+    }
+  }
+</script>
+
+<body onload="onoff();">
+<img src = "" id = "img"/><br>
+<p  id ="onoffmsg"></p>
+<input type="button" value="Off" id="onoff1" onclick="onoff();">
+</body>
+
+
+function funcaoqueretorna(dsadasd){}
+
+$.ajax({
+  url: "http://google.com",
+  type: "GET",
+  success: function(data){
+    console.debug(data);
+  }
+})
