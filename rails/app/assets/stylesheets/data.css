@@ -1,0 +1,71 @@
+#upper-panel{
+  display: flex;
+  margin: 0px;
+  min-height: 50%
+}
+#lower-panel{
+  min-height: 50%;
+  display: flex;
+  margin: 0;
+
+}
+#onoff-button{
+  padding: 0.5em 1em 0.5em 1em;/*cima direita baixo esquerda (relogio)*/
+  max-width: 100%;
+  margin-bottom: 1em;
+}
+#onoff-button .fa{
+  font-size: 3em;
+}
+#onoff-button p{
+  margin: 0;
+}
+.half-div{
+  text-align: left;
+  display: inline-block;
+  max-width: 50%;
+  margin: .5em;
+}
+
+.data-panel{
+  padding: 2em 1em 2em 1em;
+  background-color: #eeeeee;
+  margin: .3em;
+  flex-grow: 1;
+  flex-shrink: 1;
+  border-radius: 15px;
+}
+.data-panel p{
+  text-align: left;
+}
+
+.data-panel-col-1{
+  flex-basis: 10%;
+}
+.data-panel-col-2{
+  flex-basis: 20%;
+}
+body{
+  background-color: #111111;
+  max-width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  max-height: 100vh;
+}
+.control-panel{
+  max-height: 100%;
+  max-width: 100vw;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  flex-direction: column;
+}
+.centered{
+  text-align: center;
+}
+.h-icon{
+  max-height: 1em;
+}
+.md-control-btn{
+  padding: 1em 3em 1em 3em;
+}

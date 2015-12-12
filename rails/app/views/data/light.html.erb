@@ -1,52 +1,14 @@
-<h1>Iluminação </h1>
-<p> Ampéres: <%=@Amp%> A.</p>
-<p> Potência: <%=@Pot%> W.</p>
-<p> Consumo Diário: <%=@KWhdia%> kWh/dia.</p>
-<p> Consumo Mensal: <%=@KWhmes%> kWh/mês.</p>
-<p> Conta de Luz: R$<%=@Conta%>.</p>
-
-A lâmpada está <%= if @lightonoff  then "ligado" else "desligado" end%>.
-
-<%if @lightonoff %>
-<p> IMAGEM LIGADA</p>
-<% else %>
-<img src="desligada.jpg">
-<% end %>
-
-<hr>
-
-<script type="text/javascript">
-function onoff(){
-
-  var currentvalue = $("#onoff1").val();
-
-  if(currentvalue=="On"){
-    $.ajax({url: "/luzes.xml?action=turnoff"}).done(function(data){
-      var xml = jQuery.parseXML(data);
-      console.debug(xml);
-      alert( $(data).find("Amp").html() );
-    });
-    document.getElementById('img').setAttribute("width",200);
-    $('#onoff1').val("Off");
-    document.getElementById('img').src ="ligada.png";
-    document.getElementById('onoffmsg').innerHTML = "lampada agora esta ligada";
-    }
-
-  else {
-    $.ajax({url: "/luzes.xml?action=turnon"}).done(function(data){
-      console.debug(data);
-    });
-    document.getElementById('img').setAttribute("width",200);
-    document.getElementById('onoff1').value ="On";
-    document.getElementById('img').src ="desligada.jpg";
-    document.getElementById('onoffmsg').innerHTML = "lampada agora esta desligada";
-    }
-  }
-
-</script>
-
-<body onload="onoff();">
-<img src = "" id = "img"/><br>
-<p  id ="onoffmsg"></p>
-<input type="button" value="Off" id="onoff1" onclick="onoff();">
-</body>
+<div class="control-panel">
+  <div id="upper-panel" class="row">
+    <div class="data-panel data-panel-col-2"><%= render "onoff_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "light_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "bill_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "temperature_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "fan_panel"%></div>
+  </div>
+  <div id="lower-panel">
+      <div class="data-panel">
+        <%= render "plot_panel"%>
+    </div>
+  </div>
+</div>
