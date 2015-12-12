@@ -1,5 +1,9 @@
 <h1>Iluminação </h1>
-<p> A lâmpada está <%= @lightstatus%>.</p>
+<p> Ampéres: <%=@Amp%> A.</p>
+<p> Potência: <%=@Pot%> W.</p>
+<p> Consumo Diário: <%=@KWhdia%> kWh/dia.</p>
+<p> Consumo Mensal: <%=@KWhmes%> kWh/mês.</p>
+<p> Conta de Luz: R$<%=@Conta%>.</p>
 
 A lâmpada está <%= if @lightonoff  then "ligado" else "desligado" end%>.
 
@@ -13,20 +17,32 @@ A lâmpada está <%= if @lightonoff  then "ligado" else "desligado" end%>.
 
 <script type="text/javascript">
 function onoff(){
-  $.ajax({url: "/luzes"}).done(function(data){console.debug(data)})
-  currentvalue = document.getElementById('onoff1').value;
-  document.getElementById('img').setAttribute("width",200);
+
+  var currentvalue = $("#onoff1").val();
+
   if(currentvalue=="On"){
+    $.ajax({url: "/luzes.xml?action=turnoff"}).done(function(data){
+      var xml = jQuery.parseXML(data);
+      console.debug(xml);
+      alert( $(data).find("Amp").html() );
+    });
+    document.getElementById('img').setAttribute("width",200);
     $('#onoff1').val("Off");
     document.getElementById('img').src ="ligada.png";
     document.getElementById('onoffmsg').innerHTML = "lampada agora esta ligada";
     }
+
   else {
+    $.ajax({url: "/luzes.xml?action=turnon"}).done(function(data){
+      console.debug(data);
+    });
+    document.getElementById('img').setAttribute("width",200);
     document.getElementById('onoff1').value ="On";
     document.getElementById('img').src ="desligada.jpg";
     document.getElementById('onoffmsg').innerHTML = "lampada agora esta desligada";
     }
   }
+
 </script>
 
 <body onload="onoff();">
@@ -34,14 +50,3 @@ function onoff(){
 <p  id ="onoffmsg"></p>
 <input type="button" value="Off" id="onoff1" onclick="onoff();">
 </body>
-
-
-function funcaoqueretorna(dsadasd){}
-
-$.ajax({
-  url: "http://google.com",
-  type: "GET",
-  success: function(data){
-    console.debug(data);
-  }
-})
