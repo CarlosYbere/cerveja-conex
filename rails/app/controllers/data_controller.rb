@@ -1,56 +1,75 @@
 class DataController < ApplicationController
 	require 'rubyserial'
 	require 'nokogiri'
-	def sensors
 
-		port_str = `ls /dev`.split("\n").grep(/usb|ACM/i).map{|d| "/dev/#{d}"}.first
-		baud_rate = 115200
-		serialport = Serial.new port_str, baud_rate
-
-		#aqui eu vejo a luz'
-		@lightstatus = true
-		@lightonoff = true #aqui eu coloc
-
-		leitura = serialport.read 300
-
+	def self.search_pattern raw_string
 		beginPattern = "<SerialArduino>"
-		beginIndex = leitura.index beginPattern
-		leitura = leitura[beginIndex..leitura.length]
+		beginIndex = raw_string.index(beginPattern)
+		puts "beginIndex:"
+		puts beginIndex
+		raw_string = raw_string[beginIndex..raw_string.length]
 
 		endPattern = "</SerialArduino>"
 		endSize = endPattern.length
-		endIndex = leitura.index endPattern
+		endIndex = raw_string.index endPattern
 
-		@XML = leitura[0..(endIndex+endSize)]
+		return raw_string[0..(endIndex+endSize)]
+	end
+	def create_sensor_data	 amp,pot,kWhdia,kWhmes,conta
+		sensorData = SensorData.new
+		sensorData.amp = amp.to_f
+		sensorData.pot = pot.to_f
+		sensorData.kwhdia = kWhdia.to_f
+		sensorData.kwhmes = kWhmes.to_f
+		sensorData.conta = conta.to_f
+		sensorData.save
+	end
+	def sensors
+		#começa com valor padram sem nada
+		@XML =@Amp =@Pot = @KWhdia = @KWhmes = @Conta =@Temp =""
+		port_str = `ls /dev`.split("\n").grep(/ACM/i).map{|d| "/dev/#{d}"}.last
+		baud_rate = 115200
+		puts "Abrindo a porta "+port_str+"com frequência "+baud_rate.to_s
+		if port_str == nil
+			@error = "Sem portas disponíveis"
+		else
+			serialport = Serial.new port_str, baud_rate
+			if !params["comando"]
+				params["comando"]="g"
+			end
+			serialport.write params["comando"]
+			sleep 0.5
+			if params["comando"].include? "g" #não é uma solução legal...ficaria melhor se usasse rake tasks
+				leitura = serialport.read 3000
+				if leitura!=""
+					puts "leitura crua:("+leitura+")"
+					@XML = DataController.search_pattern leitura
 
-		xml = Nokogiri::XML @XML
+					xml = Nokogiri::XML @XML
 
-		@Amp = (xml.css "Amp").text
-		@Pot = (xml.css "Pot").text
-		@KWhdia = (xml.css "KWhdia").text
-		@KWhmes = (xml.css "KWhmes").text
-		@Conta = (xml.css "Conta").text
+					@Amp = (xml.css "Amp").text
+					@Pot = (xml.css "Pot").text
+					@KWhdia = (xml.css "KWhdia").text
+					@KWhmes = (xml.css "KWhmes").text
+					@Conta = (xml.css "Conta").text
+					@Temp = (xml.css "Temp").text
+					@IN1 = (xml.css "IN1").text
+					@IN2 = (xml.css "IN2").text
+					puts "temperatura: #{@Temp}"
+					puts "in1: #{@IN1}"
+					puts "in2: #{@IN2}"
 
-		data = SensorData.new
-		data.amp = @Amp.to_f
-		data.pot = @Pot.to_f
-		data.kwhdia = @KWhdia.to_f
-		data.kwhmes = @KWhmes.to_f
-		data.conta = @Conta.to_f
-		data.save
+					create_sensor_data @Amp,@Pot,@KWhdia,@KWhmes,@Conta
 
-		if params["todo"]=="turnoff"
-				serialport.write "mn"
-				puts "desligando"
-		elsif params["todo"]=="turnon"
-				serialport.write "mn"
-				puts "ligando"
-		end
-		serialport.close
-		respond_to do |format|
-			format.xml { render xml: @XML }
-			format.html
+				else
+					puts @error="leitura não encotrada"
+				end
+				respond_to do |format|
+					format.xml { render xml: @XML }
+					format.html
+				end
+			end
+				serialport.close
 		end
 	end
-
 end
