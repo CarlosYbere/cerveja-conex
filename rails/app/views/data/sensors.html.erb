@@ -1,2 +1,14 @@
-<h1>Sensores</h1>
-<p>Bom dia! A temperatura da cerveja ta de <%= @temperature %> graus</p>
+<div class="control-panel">
+  <div id="upper-panel" class="row">
+    <div class="data-panel data-panel-col-2"><%= render "onoff_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "light_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "bill_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "temperature_panel"%></div>
+    <div class="data-panel data-panel-col-1"><%= render "fan_panel"%></div>
+  </div>
+  <div id="lower-panel">
+      <div class="data-panel">
+        <%= render "plot_panel"%>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,9 @@
 class DataController < ApplicationController
 	require 'rubyserial'
 	require 'nokogiri'
-	def light
+	def sensors
 
-		port_str = `ls /dev`.split("\n").grep(/usb|ACM/i).map{|d| "/dev/#{d}"}[0] #may be different for you
+		port_str = `ls /dev`.split("\n").grep(/usb|ACM/i).map{|d| "/dev/#{d}"}.first
 		baud_rate = 115200
 		serialport = Serial.new port_str, baud_rate
 
@@ -31,28 +31,26 @@ class DataController < ApplicationController
 		@KWhmes = (xml.css "KWhmes").text
 		@Conta = (xml.css "Conta").text
 
-		if params["action"]=="turnoff"
-				serialport.write "d"
-		elsif params["action"]=="turnon"
-				serialport.write "l"
+		data = SensorData.new
+		data.amp = @Amp.to_f
+		data.pot = @Pot.to_f
+		data.kwhdia = @KWhdia.to_f
+		data.kwhmes = @KWhmes.to_f
+		data.conta = @Conta.to_f
+		data.save
+
+		if params["todo"]=="turnoff"
+				serialport.write "mn"
+				puts "desligando"
+		elsif params["todo"]=="turnon"
+				serialport.write "mn"
+				puts "ligando"
 		end
-
-
+		serialport.close
 		respond_to do |format|
 			format.xml { render xml: @XML }
-			format.js
 			format.html
 		end
 	end
-	def sensors
-		#aqui eu me comunico com os sensores...
-		#criando variavel global com @
-		@temperature = 40
-	end
-	def multimedia
-		@link = "http.xxx.x.xx.x.xxx"
-	end
-	def plot
-		@valor = 5
-	end
+
 end
