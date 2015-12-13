@@ -25,7 +25,10 @@ function getData(){//pegar os dados no servidor
   };
   jQuery.ajax("/sensores.xml",options);//chama o ajax com as opções declaradas acima
 }
+setInterval(getData,1000);//faz com que a função seja executada a cada xxx milisegundos
 function command(comando){
   jQuery.ajax("/sensores?comando="+comando);
 }
-setInterval(getData,1000);//faz com que a função seja executada a cada xxx milisegundos
+function tempMax(){
+    jQuery.ajax("/sensores?temp-max="+$("#temp-max-field").val());
+}

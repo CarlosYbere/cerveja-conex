@@ -25,6 +25,7 @@ class DataController < ApplicationController
 		sensorData.save
 	end
 	def sensors
+
 		#começa com valor padram sem nada
 		@XML =@Amp =@Pot = @KWhdia = @KWhmes = @Conta =@Temp =""
 		port_str = `ls /dev`.split("\n").grep(/ACM/i).map{|d| "/dev/#{d}"}.last
@@ -38,6 +39,10 @@ class DataController < ApplicationController
 				params["comando"]="g"
 			end
 			serialport.write params["comando"]
+			if params["temp-max"]
+				$temperatura_maxima=params["temp-max"].to_f
+				serialport.write "t"+params["temp-max"]
+			end
 			sleep 0.5
 			if params["comando"].include? "g" #não é uma solução legal...ficaria melhor se usasse rake tasks
 				leitura = serialport.read 3000
